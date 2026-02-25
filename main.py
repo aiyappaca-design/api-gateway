@@ -3,8 +3,8 @@ import httpx
 
 app = FastAPI()
 
-DEBIT_URL = "https://your-debit-service.onrender.com"
-CARD_URL = "https://your-card-store.onrender.com"
+DEBIT_URL = "https://debit-service.onrender.com"
+CARD_URL = "https://card-store-8uzi.onrender.com"
 
 @app.api_route("/api/debit/{path:path}", methods=["GET","POST","PATCH"])
 async def proxy_debit(path: str, request: Request):
