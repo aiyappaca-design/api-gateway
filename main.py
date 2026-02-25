@@ -19,10 +19,9 @@ async def proxy_debit(path: str, request: Request):
         try:
             response = await client.request(
                 request.method,
-                f"{DEBIT_URL}/{path}",
+                f"{CARD_URL}/{path}",
                 content=await request.body(),
-                params=request.query_params,
-                headers=dict(request.headers)
+                params=request.query_params
             )
             return response.json()
         except httpx.RequestError:
@@ -37,8 +36,7 @@ async def proxy_cards(path: str, request: Request):
                 request.method,
                 f"{CARD_URL}/{path}",
                 content=await request.body(),
-                params=request.query_params,
-                headers=dict(request.headers)
+                params=request.query_params
             )
             return response.json()
         except httpx.RequestError:
