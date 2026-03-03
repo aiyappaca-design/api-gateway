@@ -15,6 +15,9 @@ def login():
     token = create_access_token({"sub": "admin"})
     return {"access_token": token, "token_type": "bearer"}
 
+verify_token()
+forward_request(headers={"Authorization": "Bearer <token>"})
+
 
 @app.get("/")
 def root():
