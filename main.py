@@ -1,11 +1,19 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 import httpx
 import os
+from auth import create_access_token, verify_token
 
 app = FastAPI()
 
 DEBIT_URL = os.getenv("DEBIT_URL")
 CARD_URL = os.getenv("CARD_URL")
+
+
+@app.post("/login")
+def login():
+    # In real world validate username/password from DB
+    token = create_access_token({"sub": "admin"})
+    return {"access_token": token, "token_type": "bearer"}
 
 
 @app.get("/")
