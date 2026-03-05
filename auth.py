@@ -1,5 +1,6 @@
 from jose import jwt
-from fastapi import HTTPException, Security, requests
+import requests
+from fastapi import HTTPException, Security
 from fastapi.security import HTTPBearer
 
 KEYCLOAK_URL = "http://192.168.0.104:8080/realms//banking-realm"
