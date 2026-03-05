@@ -1,26 +1,39 @@
-from datetime import datetime, timedelta
-from jose import JWTError, jwt
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from jose import jwt
+import requests
+from fastapi import HTTPException, Security
+from fastapi.security import HTTPBearer
 
-SECRET_KEY = "supersecretkey"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 300
+KEYCLOAK_URL = "http://192.168.0.104:8080/realms//banking-realm"
+JWKS_URL = f"{KEYCLOAK_URL}/protocol/openid-connect/certs"
 
 security = HTTPBearer()
 
-def create_access_token(data: dict):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+jwks = requests.get(JWKS_URL).json()
 
-def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+
+def verify_token(credentials=Security(security)):
+
+    token = credentials.credentials
+
     try:
-        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
+        header = jwt.get_unverified_header(token)
+
+        key = None
+        for k in jwks["keys"]:
+            if k["kid"] == header["kid"]:
+                key = k
+
+        if key is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+        payload = jwt.decode(
+            token,
+            key,
+            algorithms=["RS256"],
+            audience="gateway-client"
         )
+
+        return payload
+
+    except Exception:
+        raise HTTPException(status_code=401, detail="Token validation failed")

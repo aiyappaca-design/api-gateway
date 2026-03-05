@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, Depends, HTTPException
 import httpx
 import os
-from auth import create_access_token, verify_token
+from auth import verify_token
 
 app = FastAPI()
 
@@ -9,10 +9,10 @@ DEBIT_URL = os.getenv("DEBIT_URL")
 CARD_URL = os.getenv("CARD_URL")
 
 
-@app.post("/login")
-def login():
-    token = create_access_token({"sub": "admin"})
-    return {"access_token": token, "token_type": "bearer"}
+# @app.post("/login")
+# def login():
+#     token = create_access_token({"sub": "admin"})
+#     return {"access_token": token, "token_type": "bearer"}
 
 
 @app.get("/")
